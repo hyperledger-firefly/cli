@@ -173,6 +173,10 @@ type NamespacesConfig struct {
 	Predefined []*Namespace `json:"predefined"`
 }
 
+type Config struct {
+  AutoReload bool `yaml:"autoReload"`
+}
+
 type FireflyConfig struct {
 	Log        *LogConfig           `yaml:"log,omitempty"`
 	Debug      *HTTPServerConfig    `yaml:"debug,omitempty"`
@@ -184,5 +188,5 @@ type FireflyConfig struct {
 	Event      *EventConfig         `yaml:"event,omitempty"`
 	Plugins    *Plugins             `yaml:"plugins"`
 	Namespaces *NamespacesConfig    `yaml:"namespaces"`
-	AutoReload bool 				`json:"autoReload" yaml:"autoReload"`
+	Config     *Config              `yaml:"config,omitempty"`
 }

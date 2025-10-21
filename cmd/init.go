@@ -335,6 +335,6 @@ func init() {
 	initCmd.PersistentFlags().StringArrayVar(&initOptions.NodeNames, "node-name", []string{}, "Node name")
 	initCmd.PersistentFlags().BoolVar(&initOptions.RemoteNodeDeploy, "remote-node-deploy", false, "Enable or disable deployment of FireFly contracts on remote nodes")
 	initCmd.PersistentFlags().StringToStringVar(&initOptions.EnvironmentVars, "environment-vars", map[string]string{}, "Common environment variables to set on all containers in FireFly stack")
-	initCmd.Flags().BoolVar(&initOptions.EnableAutoReload, "auto-reload", true, "Enable config auto reload in generated FireFly configs")
+	initCmd.Flags().BoolVar(&initOptions.EnableAutoReload, "auto-reload", true, "Enable config auto reload in FireFly core")
 	rootCmd.AddCommand(initCmd)
 }
