@@ -460,7 +460,10 @@ func (s *StackManager) writeConfig(options *types.InitOptions) error {
 		config := core.NewFireflyConfig(s.Stack, member)
 
 		if options.EnableAutoReload { 
-        	config.AutoReload = true
+        	if config.Config == nil {
+				config.Config = &types.CoreConfig{}
+			}
+			config.Config.AutoReload = true
     	}
 
 		// TODO: This code assumes that there is only one plugin instance per type. When we add support for

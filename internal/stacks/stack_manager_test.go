@@ -37,5 +37,5 @@ autoReload: true
     assert.NoError(t, err)
 
     // Check that AutoReload is true as expected
-    assert.True(t, config.AutoReload)
+    assert.True(t, config.Config.AutoReload)
 }
