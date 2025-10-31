@@ -94,10 +94,22 @@ func GetManifestForRelease(version string) (*types.VersionManifest, error) {
 
 func getManifest(version string) (*types.VersionManifest, error) {
 	manifest := &types.VersionManifest{}
-	if err := request("GET", fmt.Sprintf("https://raw.githubusercontent.com/hyperledger/firefly/%s/manifest.json", version), nil, &manifest); err != nil {
-		return nil, err
+	manifestURLs := []string{
+		fmt.Sprintf("https://github.com/hyperledger/firefly/releases/download/%s/manifest.json", version),
+		fmt.Sprintf("https://raw.githubusercontent.com/hyperledger/firefly/%s/manifest.json", version),
 	}
-	return manifest, nil
+	var lastErr error
+
+	for _, url := range manifestURLs {
+		manifest = &types.VersionManifest{}
+		if err := request("GET", url, nil, &manifest); err == nil {
+			return manifest, nil
+		} else {
+			lastErr = err
+		}
+	}
+
+	return nil, lastErr
 }
 
 func getSHA(imageName, imageTag string) (string, error) {
