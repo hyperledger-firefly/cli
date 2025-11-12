@@ -11,7 +11,6 @@ func main() {
         Config: &types.CoreConfig{},
     }
 
-    // simulate your flag
     cfg.Config.AutoReload = true
 
     out, err := yaml.Marshal(cfg)
