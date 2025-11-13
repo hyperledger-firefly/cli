@@ -22,6 +22,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -41,7 +42,7 @@ var promptNames bool
 var ffNameValidator = regexp.MustCompile(`^[0-9a-zA-Z]([0-9a-zA-Z._-]{0,62}[0-9a-zA-Z])?$`)
 
 var stackNameInvalidRegex = regexp.MustCompile(`[^-_a-z0-9]`)
-
+var overrideFile string
 var initCmd = &cobra.Command{
 	Use:   "init [stack_name] [member_count]",
 	Short: "Create a new FireFly local dev stack",
@@ -59,6 +60,26 @@ var initCmd = &cobra.Command{
 				fmt.Printf("Cleanup from previous error returned: %s", cleanupErr)
 			}
 			return err
+		}
+		if overrideFile != "" {
+			// 1. Check if the file the user provided exists
+			if _, err := os.Stat(overrideFile); err != nil {
+				return fmt.Errorf("could not find custom override file: %s", err)
+			}
+
+			destPath := filepath.Join(stackManager.Stack.StackDir, "docker-compose.override.yml")
+			// 3. Copy the file
+			input, err := os.ReadFile(overrideFile)
+			if err != nil {
+				return fmt.Errorf("could not read override file: %s", err)
+			}
+
+			err = os.WriteFile(destPath, input, 0644)
+			if err != nil {
+				return fmt.Errorf("could not write override file: %s", err)
+			}
+
+			fmt.Printf("Copied custom override file to: %s\n", destPath)
 		}
 		fmt.Printf("Stack '%s' created!\nTo start your new stack run:\n\n%s start %s\n", initOptions.StackName, rootCmd.Use, initOptions.StackName)
 		fmt.Printf("\nYour docker compose file for this stack can be found at: %s\n\n", filepath.Join(stackManager.Stack.StackDir, "docker-compose.yml"))
@@ -317,6 +338,7 @@ func init() {
 	initCmd.PersistentFlags().IntVarP(&initOptions.ExternalProcesses, "external", "e", 0, "Manage a number of FireFly core processes outside of the docker-compose stack - useful for development and debugging")
 	initCmd.PersistentFlags().StringVarP(&initOptions.FireFlyVersion, "release", "r", "latest", fmt.Sprintf("Select the FireFly release version to use. Options are: %v", fftypes.FFEnumValues(types.ReleaseChannelSelection)))
 	initCmd.PersistentFlags().StringVarP(&initOptions.ManifestPath, "manifest", "m", "", "Path to a manifest.json file containing the versions of each FireFly microservice to use. Overrides the --release flag.")
+	initCmd.Flags().StringVarP(&overrideFile, "file", "f", "", "Custom docker-compose.override.yml file to copy")
 	initCmd.PersistentFlags().BoolVar(&promptNames, "prompt-names", false, "Prompt for org and node names instead of using the defaults")
 	initCmd.PersistentFlags().BoolVar(&initOptions.PrometheusEnabled, "prometheus-enabled", false, "Enables Prometheus metrics exposition and aggregation to a shared Prometheus server")
 	initCmd.PersistentFlags().BoolVar(&initOptions.SandboxEnabled, "sandbox-enabled", true, "Enables the FireFly Sandbox to be started with your FireFly stack")
