@@ -438,7 +438,7 @@ func (p *FabricProvider) queryInstalled() (*QueryInstalledResponse, error) {
 	var res *QueryInstalledResponse
 	err = json.Unmarshal([]byte(str), &res)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse queryinstalled response as JSON: %w. Raw output: %s", err, str)
 	}
 	return res, nil
 }
@@ -515,11 +515,53 @@ func (p *FabricProvider) GetContracts(filename string, extraArgs []string) ([]st
 	return []string{filename}, nil
 }
 
+// validateChaincodePackage checks that the chaincode package file exists and is a valid gzip file.
+// Fabric chaincode packages created by 'peer lifecycle chaincode package' are tar.gz files.
+func (p *FabricProvider) validateChaincodePackage(filename string) error {
+	// Check if file exists
+	fileInfo, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("chaincode package file not found: %s", filename)
+	}
+	if err != nil {
+		return fmt.Errorf("error accessing chaincode package file: %w", err)
+	}
+	if fileInfo.IsDir() {
+		return fmt.Errorf("chaincode package path is a directory, expected a file: %s", filename)
+	}
+
+	// Read the first two bytes to check for gzip magic number (0x1f, 0x8b)
+	file, err := os.Open(filename)
+	if err != nil {
+		return fmt.Errorf("failed to open chaincode package file: %w", err)
+	}
+	defer file.Close()
+
+	header := make([]byte, 2)
+	n, err := file.Read(header)
+	if err != nil || n < 2 {
+		return fmt.Errorf("failed to read chaincode package file header: %w", err)
+	}
+
+	// Check for gzip magic number
+	if header[0] != 0x1f || header[1] != 0x8b {
+		return fmt.Errorf("invalid chaincode package file format. Expected a gzip-compressed tar archive (.tar.gz or .tgz) created by 'peer lifecycle chaincode package'. The file '%s' does not appear to be a valid gzip file", filename)
+	}
+
+	return nil
+}
+
 func (p *FabricProvider) DeployContract(filename, contractName, instanceName string, member *types.Organization, extraArgs []string) (*types.ContractDeploymentResult, error) {
 	filename, err := filepath.Abs(filename)
 	if err != nil {
 		return nil, err
 	}
+
+	// Validate that the chaincode package file exists and is a valid gzip file
+	if err := p.validateChaincodePackage(filename); err != nil {
+		return nil, err
+	}
+
 	switch {
 	case len(extraArgs) < 1:
 		return nil, fmt.Errorf("channel not set")

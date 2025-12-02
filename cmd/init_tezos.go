@@ -50,9 +50,8 @@ var initTezosCmd = &cobra.Command{
 			return err
 		}
 		if err := stackManager.InitStack(&initOptions); err != nil {
-			if err := stackManager.RemoveStack(); err != nil {
-				return err
-			}
+			// Try to clean up, but don't mask the original error
+			_ = stackManager.RemoveStack()
 			return err
 		}
 		fmt.Printf("Stack '%s' created!\nTo start your new stack run:\n\n%s start %s\n", initOptions.StackName, rootCmd.Use, initOptions.StackName)

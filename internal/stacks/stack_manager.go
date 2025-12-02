@@ -782,11 +782,15 @@ func (s *StackManager) ResetStack() error {
 }
 
 func (s *StackManager) RemoveStack() error {
-	if err := s.runDockerComposeCommand("down"); err != nil {
-		return err
-	}
-	if err := s.removeVolumes(); err != nil {
-		return err
+	// Only run docker compose down if the docker-compose.yml file exists
+	composeFile := filepath.Join(s.Stack.StackDir, "docker-compose.yml")
+	if _, err := os.Stat(composeFile); err == nil {
+		if err := s.runDockerComposeCommand("down"); err != nil {
+			return err
+		}
+		if err := s.removeVolumes(); err != nil {
+			return err
+		}
 	}
 	return os.RemoveAll(s.Stack.StackDir)
 }

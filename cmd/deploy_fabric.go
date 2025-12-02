@@ -23,6 +23,7 @@ import (
 	"github.com/hyperledger/firefly-cli/internal/docker"
 	"github.com/hyperledger/firefly-cli/internal/log"
 	"github.com/hyperledger/firefly-cli/internal/stacks"
+	"github.com/hyperledger/firefly-cli/pkg/types"
 	"github.com/spf13/cobra"
 )
 
@@ -48,6 +49,9 @@ var deployFabricCmd = &cobra.Command{
 		stackManager := stacks.NewStackManager(cmd.Context())
 		if err := stackManager.LoadStack(stackName); err != nil {
 			return err
+		}
+		if !stackManager.Stack.BlockchainProvider.Equals(types.BlockchainProviderFabric) {
+			return fmt.Errorf("stack '%s' is not a Fabric stack (blockchain provider: %s). Use 'ff deploy ethereum' for Ethereum-based stacks", stackName, stackManager.Stack.BlockchainProvider)
 		}
 		contractAddress, err := stackManager.DeployContract(filename, filename, 0, args[2:])
 		if err != nil {

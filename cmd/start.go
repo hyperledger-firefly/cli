@@ -75,11 +75,11 @@ This command will start a stack and run it in the background.
 			spin.Start()
 		}
 		messages, err := stackManager.StartStack(&startOptions)
-		if err != nil {
-			return err
-		}
 		if spin != nil {
 			spin.Stop()
+		}
+		if err != nil {
+			return err
 		}
 		fmt.Print("\n\n")
 		for _, message := range messages {
