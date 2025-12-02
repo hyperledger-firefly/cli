@@ -17,11 +17,14 @@
 package fabric
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"context"
 	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -515,7 +518,7 @@ func (p *FabricProvider) GetContracts(filename string, extraArgs []string) ([]st
 	return []string{filename}, nil
 }
 
-// validateChaincodePackage checks that the chaincode package file exists and is a valid gzip file.
+// validateChaincodePackage checks that the chaincode package file exists and is a valid tar.gz file.
 // Fabric chaincode packages created by 'peer lifecycle chaincode package' are tar.gz files.
 func (p *FabricProvider) validateChaincodePackage(filename string) error {
 	// Check if file exists
@@ -530,22 +533,27 @@ func (p *FabricProvider) validateChaincodePackage(filename string) error {
 		return fmt.Errorf("chaincode package path is a directory, expected a file: %s", filename)
 	}
 
-	// Read the first two bytes to check for gzip magic number (0x1f, 0x8b)
+	// Verify the file is a valid gzip archive
 	file, err := os.Open(filename)
 	if err != nil {
 		return fmt.Errorf("failed to open chaincode package file: %w", err)
 	}
 	defer file.Close()
 
-	header := make([]byte, 2)
-	n, err := file.Read(header)
-	if err != nil || n < 2 {
-		return fmt.Errorf("failed to read chaincode package file header: %w", err)
+	gzReader, err := gzip.NewReader(file)
+	if err != nil {
+		return fmt.Errorf("invalid chaincode package file format. Expected a gzip-compressed tar archive (.tar.gz or .tgz) created by 'peer lifecycle chaincode package'. The file '%s' does not appear to be a valid gzip file: %w", filename, err)
 	}
+	defer gzReader.Close()
 
-	// Check for gzip magic number
-	if header[0] != 0x1f || header[1] != 0x8b {
-		return fmt.Errorf("invalid chaincode package file format. Expected a gzip-compressed tar archive (.tar.gz or .tgz) created by 'peer lifecycle chaincode package'. The file '%s' does not appear to be a valid gzip file", filename)
+	// Verify the gzip contains a valid tar archive by reading at least one header
+	tarReader := tar.NewReader(gzReader)
+	_, err = tarReader.Next()
+	if err == io.EOF {
+		return fmt.Errorf("invalid chaincode package: the tar.gz archive is empty")
+	}
+	if err != nil {
+		return fmt.Errorf("invalid chaincode package file format. The file '%s' is gzip-compressed but does not contain a valid tar archive: %w", filename, err)
 	}
 
 	return nil

@@ -1,6 +1,9 @@
 package fabric
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"context"
 	"fmt"
 	"os"
@@ -403,4 +406,142 @@ func TestRegisterIdentity(t *testing.T) {
 		assert.NotNil(t, account.OrgName)
 	})
 
+}
+
+func TestValidateChaincodePackage(t *testing.T) {
+	p := &FabricProvider{}
+
+	// Helper function to create a valid tar.gz file
+	createValidTarGz := func(t *testing.T, filename string) {
+		var buf bytes.Buffer
+		gzWriter := gzip.NewWriter(&buf)
+		tarWriter := tar.NewWriter(gzWriter)
+
+		// Add a file to the tar archive
+		content := []byte("test chaincode content")
+		header := &tar.Header{
+			Name: "metadata.json",
+			Mode: 0644,
+			Size: int64(len(content)),
+		}
+		err := tarWriter.WriteHeader(header)
+		assert.NoError(t, err)
+		_, err = tarWriter.Write(content)
+		assert.NoError(t, err)
+
+		err = tarWriter.Close()
+		assert.NoError(t, err)
+		err = gzWriter.Close()
+		assert.NoError(t, err)
+
+		err = os.WriteFile(filename, buf.Bytes(), 0644)
+		assert.NoError(t, err)
+	}
+
+	t.Run("valid tar.gz file", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		validTarGzFile := filepath.Join(tmpDir, "valid.tar.gz")
+		createValidTarGz(t, validTarGzFile)
+
+		err := p.validateChaincodePackage(validTarGzFile)
+		assert.NoError(t, err)
+	})
+
+	t.Run("file not found", func(t *testing.T) {
+		err := p.validateChaincodePackage("/nonexistent/path/chaincode.tar.gz")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "chaincode package file not found")
+	})
+
+	t.Run("path is a directory", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		err := p.validateChaincodePackage(tmpDir)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "chaincode package path is a directory")
+	})
+
+	t.Run("invalid - plain text file", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		plainTextFile := filepath.Join(tmpDir, "plain.txt")
+		err := os.WriteFile(plainTextFile, []byte("this is not a gzip file"), 0644)
+		assert.NoError(t, err)
+
+		err = p.validateChaincodePackage(plainTextFile)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid chaincode package file format")
+		assert.Contains(t, err.Error(), "does not appear to be a valid gzip file")
+	})
+
+	t.Run("invalid - zip file", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		// ZIP files start with PK (0x50, 0x4B)
+		zipLikeFile := filepath.Join(tmpDir, "fake.zip")
+		err := os.WriteFile(zipLikeFile, []byte{0x50, 0x4B, 0x03, 0x04, 0x00, 0x00}, 0644)
+		assert.NoError(t, err)
+
+		err = p.validateChaincodePackage(zipLikeFile)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid chaincode package file format")
+	})
+
+	t.Run("invalid - random binary", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		randomFile := filepath.Join(tmpDir, "random.bin")
+		err := os.WriteFile(randomFile, []byte{0xDE, 0xAD, 0xBE, 0xEF}, 0644)
+		assert.NoError(t, err)
+
+		err = p.validateChaincodePackage(randomFile)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid chaincode package file format")
+	})
+
+	t.Run("invalid - gzip but not tar (plain gzipped content)", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		gzipOnlyFile := filepath.Join(tmpDir, "gzip_only.gz")
+
+		var buf bytes.Buffer
+		gzWriter := gzip.NewWriter(&buf)
+		_, err := gzWriter.Write([]byte("this is gzipped but not a tar archive"))
+		assert.NoError(t, err)
+		err = gzWriter.Close()
+		assert.NoError(t, err)
+
+		err = os.WriteFile(gzipOnlyFile, buf.Bytes(), 0644)
+		assert.NoError(t, err)
+
+		err = p.validateChaincodePackage(gzipOnlyFile)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "does not contain a valid tar archive")
+	})
+
+	t.Run("invalid - empty tar.gz", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		emptyTarGzFile := filepath.Join(tmpDir, "empty.tar.gz")
+
+		var buf bytes.Buffer
+		gzWriter := gzip.NewWriter(&buf)
+		tarWriter := tar.NewWriter(gzWriter)
+		// Close without adding any files
+		err := tarWriter.Close()
+		assert.NoError(t, err)
+		err = gzWriter.Close()
+		assert.NoError(t, err)
+
+		err = os.WriteFile(emptyTarGzFile, buf.Bytes(), 0644)
+		assert.NoError(t, err)
+
+		err = p.validateChaincodePackage(emptyTarGzFile)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "tar.gz archive is empty")
+	})
+
+	t.Run("invalid - empty file", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		emptyFile := filepath.Join(tmpDir, "empty.tar.gz")
+		err := os.WriteFile(emptyFile, []byte{}, 0644)
+		assert.NoError(t, err)
+
+		err = p.validateChaincodePackage(emptyFile)
+		assert.Error(t, err)
+	})
 }
