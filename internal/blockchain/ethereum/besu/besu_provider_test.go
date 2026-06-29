@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum"
 
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"github.com/hyperledger/firefly-common/pkg/fftypes"
 	"github.com/stretchr/testify/assert"
 )

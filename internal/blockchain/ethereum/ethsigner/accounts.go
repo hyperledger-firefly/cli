@@ -22,7 +22,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/docker"
 )
 
 func (p *EthSignerProvider) writeTomlKeyFile(walletFilePath string) (string, error) {

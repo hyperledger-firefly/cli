@@ -22,7 +22,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/docker"
 	"github.com/hyperledger/firefly-signer/pkg/keystorev3"
 	"github.com/hyperledger/firefly-signer/pkg/secp256k1"
 )

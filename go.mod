@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-module github.com/hyperledger/firefly-cli
+module github.com/hyperledger-firefly/cli
 
-go 1.22
+go 1.26.0
 
-toolchain go1.22.6
+toolchain go1.26.4
 
 require (
 	blockwatch.cc/tzgo v1.17.4

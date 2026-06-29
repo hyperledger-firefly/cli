@@ -21,8 +21,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/tezos/connector"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/tezos/connector"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"github.com/miracl/conflate"
 	"gopkg.in/yaml.v2"
 )

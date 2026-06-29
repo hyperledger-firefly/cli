@@ -9,11 +9,11 @@ import (
 
 	"testing"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum"
-	"github.com/hyperledger/firefly-cli/internal/docker/mocks"
-	"github.com/hyperledger/firefly-cli/internal/log"
-	"github.com/hyperledger/firefly-cli/internal/utils"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum"
+	"github.com/hyperledger-firefly/cli/internal/docker/mocks"
+	"github.com/hyperledger-firefly/cli/internal/log"
+	"github.com/hyperledger-firefly/cli/internal/utils"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"github.com/hyperledger/firefly-common/pkg/fftypes"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"

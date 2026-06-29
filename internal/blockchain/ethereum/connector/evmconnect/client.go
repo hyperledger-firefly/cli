@@ -23,11 +23,11 @@ import (
 	"path"
 	"time"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/ethtypes"
-	"github.com/hyperledger/firefly-cli/internal/core"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/ethtypes"
+	"github.com/hyperledger-firefly/cli/internal/core"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 type EvmconnectRequest struct {

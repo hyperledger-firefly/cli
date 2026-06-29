@@ -28,10 +28,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/fabric/fabconnect"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/internal/log"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/fabric/fabconnect"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/log"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	cp "github.com/otiai10/copy"
 )
 

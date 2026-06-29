@@ -3,7 +3,7 @@ package ethsigner
 import (
 	"testing"
 
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 func TestWriteSignerConfig(t *testing.T) {

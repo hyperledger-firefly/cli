@@ -21,14 +21,14 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/connector"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/connector/ethconnect"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/connector/evmconnect"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/ethsigner"
-	"github.com/hyperledger/firefly-cli/internal/constants"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/connector"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/connector/ethconnect"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/connector/evmconnect"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/ethsigner"
+	"github.com/hyperledger-firefly/cli/internal/constants"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 type RemoteRPCProvider struct {

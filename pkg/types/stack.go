@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/constants"
+	"github.com/hyperledger-firefly/cli/internal/constants"
 	"github.com/hyperledger/firefly-common/pkg/fftypes"
 )
 

@@ -22,10 +22,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/constants"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/internal/log"
-	"github.com/hyperledger/firefly-cli/internal/stacks"
+	"github.com/hyperledger-firefly/cli/internal/constants"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/log"
+	"github.com/hyperledger-firefly/cli/internal/stacks"
 	"github.com/spf13/cobra"
 )
 
