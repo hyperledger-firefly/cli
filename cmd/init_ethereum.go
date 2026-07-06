@@ -27,7 +27,7 @@ import (
 	"github.com/hyperledger-firefly/cli/internal/log"
 	"github.com/hyperledger-firefly/cli/internal/stacks"
 	"github.com/hyperledger-firefly/cli/pkg/types"
-	"github.com/hyperledger/firefly-common/pkg/fftypes"
+	"github.com/hyperledger-firefly/common/pkg/fftypes"
 )
 
 var initEthereumCmd = &cobra.Command{

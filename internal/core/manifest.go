@@ -27,7 +27,7 @@ import (
 	"github.com/hyperledger-firefly/cli/internal/docker"
 	"github.com/hyperledger-firefly/cli/internal/log"
 	"github.com/hyperledger-firefly/cli/pkg/types"
-	"github.com/hyperledger/firefly-common/pkg/fftypes"
+	"github.com/hyperledger-firefly/common/pkg/fftypes"
 )
 
 func GetManifestForChannel(releaseChannel fftypes.FFEnum) (*types.VersionManifest, error) {
@@ -56,7 +56,7 @@ func GetManifestForChannel(releaseChannel fftypes.FFEnum) (*types.VersionManifes
 	if manifest.FireFly == nil {
 		// Fill in the FireFly version number
 		manifest.FireFly = &types.ManifestEntry{
-			Image: "ghcr.io/hyperledger/firefly",
+			Image: "ghcr.io/hyperledger-firefly/firefly",
 			Tag:   dockerTag,
 			SHA:   sha,
 		}
@@ -83,7 +83,7 @@ func GetManifestForRelease(version string) (*types.VersionManifest, error) {
 	if manifest.FireFly == nil {
 		// Fill in the FireFly version number
 		manifest.FireFly = &types.ManifestEntry{
-			Image: "ghcr.io/hyperledger/firefly",
+			Image: "ghcr.io/hyperledger-firefly/firefly",
 			Tag:   tag,
 			SHA:   sha,
 		}
@@ -94,7 +94,7 @@ func GetManifestForRelease(version string) (*types.VersionManifest, error) {
 
 func getManifest(version string) (*types.VersionManifest, error) {
 	manifest := &types.VersionManifest{}
-	if err := request("GET", fmt.Sprintf("https://raw.githubusercontent.com/hyperledger/firefly/%s/manifest.json", version), nil, &manifest); err != nil {
+	if err := request("GET", fmt.Sprintf("https://raw.githubusercontent.com/hyperledger-firefly/firefly/%s/manifest.json", version), nil, &manifest); err != nil {
 		return nil, err
 	}
 	return manifest, nil
@@ -122,7 +122,7 @@ func ReadManifestFile(ctx context.Context, p string) (*types.VersionManifest, er
 		log := log.LoggerFromContext(ctx)
 		log.Warn("No FireFly image present in manifest provided, using local image hypeledger/firefly")
 		manifest.FireFly = &types.ManifestEntry{
-			Image: "hyperledger/firefly",
+			Image: "hyperledger-firefly/firefly",
 			Local: true,
 		}
 	}

@@ -22,11 +22,11 @@ import (
 )
 
 var StacksDir = checkHome()
-var FireFlyCoreImageName = "ghcr.io/hyperledger/firefly"
+var FireFlyCoreImageName = "ghcr.io/hyperledger-firefly/firefly"
 var IPFSImageName = "ipfs/go-ipfs:v0.10.0"
 var PostgresImageName = "postgres"
 var PrometheusImageName = "prom/prometheus"
-var SandboxImageName = "ghcr.io/hyperledger/firefly-sandbox:latest"
+var SandboxImageName = "ghcr.io/hyperledger-firefly/firefly-sandbox:latest"
 
 func checkHome() string {
 	var homeDir, _ = os.UserHomeDir()
