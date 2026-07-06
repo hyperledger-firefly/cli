@@ -85,13 +85,13 @@ jobs:
       - name: Checkout FireFly Core repo
         uses: actions/checkout@v4
         with:
-          repository: hyperledger/firefly
+          repository: hyperledger-firefly/firefly
           path: firefly
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.22"
+          go-version: "1.26.4"
 
       - name: Compile FireFly CLI
         working-directory: firefly-cli
