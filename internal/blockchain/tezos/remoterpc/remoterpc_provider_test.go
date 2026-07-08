@@ -7,7 +7,7 @@ import (
 
 	"github.com/hyperledger-firefly/cli/internal/blockchain/tezos"
 	"github.com/hyperledger-firefly/cli/pkg/types"
-	"github.com/hyperledger/firefly-common/pkg/fftypes"
+	"github.com/hyperledger-firefly/common/pkg/fftypes"
 	"github.com/stretchr/testify/assert"
 )
 
