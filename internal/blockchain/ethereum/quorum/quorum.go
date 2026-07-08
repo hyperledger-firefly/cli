@@ -22,10 +22,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/tessera"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/pkg/types"
-	"github.com/hyperledger/firefly-common/pkg/fftypes"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/tessera"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/pkg/types"
+	"github.com/hyperledger-firefly/common/pkg/fftypes"
 )
 
 var DockerEntrypoint = "docker-entrypoint.sh"

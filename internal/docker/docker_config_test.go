@@ -3,7 +3,7 @@ package docker
 import (
 	"testing"
 
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 

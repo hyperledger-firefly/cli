@@ -19,8 +19,8 @@ package ethconnect
 import (
 	"fmt"
 
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 func (e *Ethconnect) GetServiceDefinitions(s *types.Stack, dependentServices map[string]string) []*docker.ServiceDefinition {

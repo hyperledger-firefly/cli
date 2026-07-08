@@ -22,10 +22,10 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/internal/log"
-	"github.com/hyperledger/firefly-cli/internal/stacks"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/log"
+	"github.com/hyperledger-firefly/cli/internal/stacks"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"github.com/spf13/cobra"
 )
 

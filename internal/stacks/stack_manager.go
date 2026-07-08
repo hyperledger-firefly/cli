@@ -33,23 +33,23 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain"
-	cardanoremoterpc "github.com/hyperledger/firefly-cli/internal/blockchain/cardano/remoterpc"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/besu"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/geth"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/quorum"
-	ethremoterpc "github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/remoterpc"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/fabric"
-	tezosremoterpc "github.com/hyperledger/firefly-cli/internal/blockchain/tezos/remoterpc"
-	"github.com/hyperledger/firefly-cli/internal/constants"
-	"github.com/hyperledger/firefly-cli/internal/core"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/internal/log"
-	"github.com/hyperledger/firefly-cli/internal/tokens"
-	"github.com/hyperledger/firefly-cli/internal/tokens/erc1155"
-	"github.com/hyperledger/firefly-cli/internal/tokens/erc20erc721"
-	"github.com/hyperledger/firefly-cli/pkg/types"
-	"github.com/hyperledger/firefly-common/pkg/fftypes"
+	"github.com/hyperledger-firefly/cli/internal/blockchain"
+	cardanoremoterpc "github.com/hyperledger-firefly/cli/internal/blockchain/cardano/remoterpc"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/besu"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/geth"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/quorum"
+	ethremoterpc "github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/remoterpc"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/fabric"
+	tezosremoterpc "github.com/hyperledger-firefly/cli/internal/blockchain/tezos/remoterpc"
+	"github.com/hyperledger-firefly/cli/internal/constants"
+	"github.com/hyperledger-firefly/cli/internal/core"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/log"
+	"github.com/hyperledger-firefly/cli/internal/tokens"
+	"github.com/hyperledger-firefly/cli/internal/tokens/erc1155"
+	"github.com/hyperledger-firefly/cli/internal/tokens/erc20erc721"
+	"github.com/hyperledger-firefly/cli/pkg/types"
+	"github.com/hyperledger-firefly/common/pkg/fftypes"
 	"github.com/miracl/conflate"
 
 	"gopkg.in/yaml.v3"
@@ -321,27 +321,27 @@ func (s *StackManager) LoadStack(stackName string) error {
 	if s.Stack.VersionManifest == nil {
 		s.Stack.VersionManifest = &types.VersionManifest{
 			FireFly: &types.ManifestEntry{
-				Image: "ghcr.io/hyperledger/firefly",
+				Image: "ghcr.io/hyperledger-firefly/firefly",
 				Tag:   "latest",
 			},
 			Ethconnect: &types.ManifestEntry{
-				Image: "ghcr.io/hyperledger/firefly-ethconnect",
+				Image: "ghcr.io/hyperledger-firefly/ethconnect",
 				Tag:   "latest",
 			},
 			Fabconnect: &types.ManifestEntry{
-				Image: "ghcr.io/hyperledger/firefly-fabconnect",
+				Image: "ghcr.io/hyperledger-firefly/fabconnect",
 				Tag:   "latest",
 			},
 			DataExchange: &types.ManifestEntry{
-				Image: "ghcr.io/hyperledger/firefly-dataexchange-https",
+				Image: "ghcr.io/hyperledger-firefly/dataexchange-https",
 				Tag:   "latest",
 			},
 			TokensERC1155: &types.ManifestEntry{
-				Image: "ghcr.io/hyperledger/firefly-tokens-erc1155",
+				Image: "ghcr.io/hyperledger-firefly/tokens-erc1155",
 				Tag:   "latest",
 			},
 			TokensERC20ERC721: &types.ManifestEntry{
-				Image: "ghcr.io/hyperledger/firefly-tokens-erc20-erc721",
+				Image: "ghcr.io/hyperledger-firefly/tokens-erc20-erc721",
 				Tag:   "latest",
 			},
 		}
@@ -350,7 +350,7 @@ func (s *StackManager) LoadStack(stackName string) error {
 	// If signer is not specified in the manifest, use the previously hardcoded default
 	if s.Stack.VersionManifest.Signer == nil {
 		s.Stack.VersionManifest.Signer = &types.ManifestEntry{
-			Image: "ghcr.io/hyperledger/firefly-signer",
+			Image: "ghcr.io/hyperledger-firefly/signer",
 			Tag:   "v0.9.6",
 		}
 	}

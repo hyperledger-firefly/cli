@@ -19,8 +19,8 @@ package fabric
 import (
 	"fmt"
 
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 func GenerateDockerServiceDefinitions(s *types.Stack) []*docker.ServiceDefinition {
