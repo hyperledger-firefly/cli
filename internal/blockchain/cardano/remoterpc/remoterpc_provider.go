@@ -22,13 +22,13 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/cardano"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/cardano/cardanosigner"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/cardano/connector"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/cardano/connector/cardanoconnect"
-	"github.com/hyperledger/firefly-cli/internal/constants"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/cardano"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/cardano/cardanosigner"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/cardano/connector"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/cardano/connector/cardanoconnect"
+	"github.com/hyperledger-firefly/cli/internal/constants"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 type RemoteRPCProvider struct {

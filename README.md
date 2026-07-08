@@ -1,8 +1,8 @@
 # FireFly CLI
 
-![build](https://github.com/hyperledger/firefly-cli/actions/workflows/build.yml/badge.svg?branch=main)
+![build](https://github.com/hyperledger-firefly/cli/actions/workflows/build.yml/badge.svg?branch=main)
 
-The FireFly CLI can be used to create local [FireFly](https://github.com/hyperledger/firefly) stacks
+The FireFly CLI can be used to create local [FireFly](https://github.com/hyperledger-firefly/firefly) stacks
 for offline development of blockchain apps. This allows developers to rapidly iterate on their idea without
 needing to set up a bunch of infrastructure before they can write the first line of code.
 
@@ -21,7 +21,7 @@ In order to run the FireFly CLI, you will need a few things installed on your de
 The easiest way to get up and running with the FireFly CLI is to download a pre-compiled binary of the latest release.
 
 ### Download the package for your OS
-Go to the [latest release page](https://github.com/hyperledger/firefly-cli/releases/latest) and download the package for your OS and CPU architecture.
+Go to the [latest release page](https://github.com/hyperledger-firefly/cli/releases/latest) and download the package for your OS and CPU architecture.
 
 ### Extract the binary and move it to `/usr/local/bin`
 
@@ -47,7 +47,7 @@ If you downloaded the package from GitHub into a different directory, you will n
 If you have a local Go development environment, and you have included `${GOPATH}/bin` in your path, you can install with:
 
 ```sh
-go install github.com/hyperledger/firefly-cli/ff@latest
+go install github.com/hyperledger-firefly/cli/ff@latest
 ```
 
 ## Create a new stack
