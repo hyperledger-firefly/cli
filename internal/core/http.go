@@ -25,7 +25,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hyperledger/firefly-cli/internal/log"
+	"github.com/hyperledger-firefly/cli/internal/log"
 )
 
 var requestTimeout int = -1

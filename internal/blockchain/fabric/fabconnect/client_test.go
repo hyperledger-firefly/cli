@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hyperledger/firefly-cli/internal/utils"
+	"github.com/hyperledger-firefly/cli/internal/utils"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )

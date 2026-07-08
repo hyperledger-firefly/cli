@@ -22,12 +22,12 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum"
-	"github.com/hyperledger/firefly-cli/internal/core"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/internal/log"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum"
+	"github.com/hyperledger-firefly/cli/internal/core"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/log"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 const tokenProviderName = "erc1155"

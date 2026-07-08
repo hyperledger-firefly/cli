@@ -24,11 +24,11 @@ import (
 	"path/filepath"
 
 	secp256k1 "github.com/btcsuite/btcd/btcec/v2"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"golang.org/x/crypto/sha3"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/ethtypes"
-	"github.com/hyperledger/firefly-cli/internal/log"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/ethtypes"
+	"github.com/hyperledger-firefly/cli/internal/log"
 )
 
 type Account struct {

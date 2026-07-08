@@ -25,7 +25,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/hyperledger/firefly-cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/docker"
 )
 
 var DockerEntrypoint = "docker-entrypoint.sh"
