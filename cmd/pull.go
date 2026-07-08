@@ -63,16 +63,9 @@ Pull the images for a stack .
 		if err := stackManager.LoadStack(stackName); err != nil {
 			return err
 		}
-		if spin != nil {
-			spin.Start()
-		}
-		if err := stackManager.PullStack(&pullOptions); err != nil {
-			return err
-		}
-		if spin != nil {
-			spin.Stop()
-		}
-		return nil
+		return withSpinner(spin, func() error {
+			return stackManager.PullStack(&pullOptions)
+		})
 	},
 }
 

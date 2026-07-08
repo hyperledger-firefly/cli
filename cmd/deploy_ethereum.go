@@ -23,6 +23,7 @@ import (
 	"github.com/hyperledger-firefly/cli/internal/docker"
 	"github.com/hyperledger-firefly/cli/internal/log"
 	"github.com/hyperledger-firefly/cli/internal/stacks"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"github.com/spf13/cobra"
 )
 
@@ -54,6 +55,9 @@ solc --combined-json abi,bin contract.sol > contract.json
 		stackManager := stacks.NewStackManager(cmd.Context())
 		if err := stackManager.LoadStack(stackName); err != nil {
 			return err
+		}
+		if !stackManager.Stack.BlockchainProvider.Equals(types.BlockchainProviderEthereum) {
+			return fmt.Errorf("stack '%s' is not an Ethereum stack (blockchain provider: %s). Use 'ff deploy fabric' for Fabric stacks", stackName, stackManager.Stack.BlockchainProvider)
 		}
 		contractNames, err := stackManager.GetContracts(filename, args[2:])
 		if err != nil {

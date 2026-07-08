@@ -17,11 +17,14 @@
 package fabric
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"context"
 	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -438,7 +441,7 @@ func (p *FabricProvider) queryInstalled() (*QueryInstalledResponse, error) {
 	var res *QueryInstalledResponse
 	err = json.Unmarshal([]byte(str), &res)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse queryinstalled response as JSON: %w. Raw output: %s", err, str)
 	}
 	return res, nil
 }
@@ -515,11 +518,58 @@ func (p *FabricProvider) GetContracts(filename string, extraArgs []string) ([]st
 	return []string{filename}, nil
 }
 
+// validateChaincodePackage checks that the chaincode package file exists and is a valid tar.gz file.
+// Fabric chaincode packages created by 'peer lifecycle chaincode package' are tar.gz files.
+func (p *FabricProvider) validateChaincodePackage(filename string) error {
+	// Check if file exists
+	fileInfo, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("chaincode package file not found: %s", filename)
+	}
+	if err != nil {
+		return fmt.Errorf("error accessing chaincode package file: %w", err)
+	}
+	if fileInfo.IsDir() {
+		return fmt.Errorf("chaincode package path is a directory, expected a file: %s", filename)
+	}
+
+	// Verify the file is a valid gzip archive
+	file, err := os.Open(filename)
+	if err != nil {
+		return fmt.Errorf("failed to open chaincode package file: %w", err)
+	}
+	defer file.Close()
+
+	gzReader, err := gzip.NewReader(file)
+	if err != nil {
+		return fmt.Errorf("invalid chaincode package file format. Expected a gzip-compressed tar archive (.tar.gz or .tgz) created by 'peer lifecycle chaincode package'. The file '%s' does not appear to be a valid gzip file: %w", filename, err)
+	}
+	defer gzReader.Close()
+
+	// Verify the gzip contains a valid tar archive by reading at least one header
+	tarReader := tar.NewReader(gzReader)
+	_, err = tarReader.Next()
+	if err == io.EOF {
+		return fmt.Errorf("invalid chaincode package: the tar.gz archive is empty")
+	}
+	if err != nil {
+		return fmt.Errorf("invalid chaincode package file format. The file '%s' is gzip-compressed but does not contain a valid tar archive: %w", filename, err)
+	}
+
+	return nil
+}
+
 func (p *FabricProvider) DeployContract(filename, contractName, instanceName string, member *types.Organization, extraArgs []string) (*types.ContractDeploymentResult, error) {
 	filename, err := filepath.Abs(filename)
 	if err != nil {
 		return nil, err
 	}
+
+	// Validate that the chaincode package file exists and is a valid gzip file
+	if err := p.validateChaincodePackage(filename); err != nil {
+		return nil, err
+	}
+
 	switch {
 	case len(extraArgs) < 1:
 		return nil, fmt.Errorf("channel not set")

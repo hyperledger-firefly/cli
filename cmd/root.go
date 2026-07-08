@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/briandowns/spinner"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
@@ -41,6 +42,16 @@ var logger log.Logger = &log.StdoutLogger{
 
 // name of the executable, this is for the help messages
 var ExecutableName string = os.Args[0]
+
+// withSpinner runs fn with the spinner (if configured) running, and stops it
+// before returning so an error is not overlaid by the spinner in the user's terminal
+func withSpinner(spin *spinner.Spinner, fn func() error) error {
+	if spin != nil {
+		spin.Start()
+		defer spin.Stop()
+	}
+	return fn()
+}
 
 func GetFireflyASCIIArt() string {
 	s := ""

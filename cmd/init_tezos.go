@@ -50,8 +50,10 @@ var initTezosCmd = &cobra.Command{
 			return err
 		}
 		if err := stackManager.InitStack(&initOptions); err != nil {
-			if err := stackManager.RemoveStack(); err != nil {
-				return err
+			// Try to clean up, but log rather than return any error to not mask the original error
+			if verr := stackManager.RemoveStack(); verr != nil {
+				l := log.LoggerFromContext(ctx)
+				l.Info(fmt.Sprintf("Error whilst removing the stack: %s", verr.Error()))
 			}
 			return err
 		}
