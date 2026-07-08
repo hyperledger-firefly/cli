@@ -71,14 +71,11 @@ This command will start a stack and run it in the background.
 			fmt.Println("this will take a few seconds longer since this is the first time you're running this stack...")
 		}
 
-		if spin != nil {
-			spin.Start()
-		}
-		messages, err := stackManager.StartStack(&startOptions)
-		if spin != nil {
-			spin.Stop()
-		}
-		if err != nil {
+		var messages []string
+		if err := withSpinner(spin, func() (err error) {
+			messages, err = stackManager.StartStack(&startOptions)
+			return err
+		}); err != nil {
 			return err
 		}
 		fmt.Print("\n\n")

@@ -63,18 +63,9 @@ Pull the images for a stack .
 		if err := stackManager.LoadStack(stackName); err != nil {
 			return err
 		}
-		if spin != nil {
-			spin.Start()
-		}
-		err = stackManager.PullStack(&pullOptions)
-		if spin != nil {
-			spin.Stop()
-		}
-		// Throw an error after stopping the spin, this will prevent the user's terminal from having the spinner as overlay
-		if err != nil {
-			return err
-		}
-		return nil
+		return withSpinner(spin, func() error {
+			return stackManager.PullStack(&pullOptions)
+		})
 	},
 }
 

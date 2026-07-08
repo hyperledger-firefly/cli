@@ -54,8 +54,11 @@ var initFabricCmd = &cobra.Command{
 			return err
 		}
 		if err := stackManager.InitStack(&initOptions); err != nil {
-			// Try to clean up, but don't mask the original error
-			_ = stackManager.RemoveStack()
+			// Try to clean up, but log rather than return any error to not mask the original error
+			if verr := stackManager.RemoveStack(); verr != nil {
+				l := log.LoggerFromContext(ctx)
+				l.Info(fmt.Sprintf("Error whilst removing the stack: %s", verr.Error()))
+			}
 			return err
 		}
 		fmt.Printf("Stack '%s' created!\nTo start your new stack run:\n\n%s start %s\n", initOptions.StackName, rootCmd.Use, initOptions.StackName)
