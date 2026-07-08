@@ -26,14 +26,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/connector"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/connector/ethconnect"
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum/connector/evmconnect"
-	"github.com/hyperledger/firefly-cli/internal/constants"
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-cli/internal/log"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/connector"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/connector/ethconnect"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum/connector/evmconnect"
+	"github.com/hyperledger-firefly/cli/internal/constants"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/cli/internal/log"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 )
 
 var gethImage = "ethereum/client-go:release-1.10"

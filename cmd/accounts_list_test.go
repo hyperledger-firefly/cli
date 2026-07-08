@@ -3,7 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/hyperledger/firefly-cli/internal/utils"
+	"github.com/hyperledger-firefly/cli/internal/utils"
 	"github.com/stretchr/testify/assert"
 )
 

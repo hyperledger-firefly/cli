@@ -22,9 +22,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hyperledger/firefly-cli/internal/docker"
-	"github.com/hyperledger/firefly-signer/pkg/keystorev3"
-	"github.com/hyperledger/firefly-signer/pkg/secp256k1"
+	"github.com/hyperledger-firefly/cli/internal/docker"
+	"github.com/hyperledger-firefly/signer/pkg/keystorev3"
+	"github.com/hyperledger-firefly/signer/pkg/secp256k1"
 )
 
 func CreateWalletFile(outputDirectory, prefix, password string) (*secp256k1.KeyPair, string, error) {

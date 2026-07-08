@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hyperledger/firefly-cli/internal/blockchain/ethereum"
-	"github.com/hyperledger/firefly-cli/pkg/types"
+	"github.com/hyperledger-firefly/cli/internal/blockchain/ethereum"
+	"github.com/hyperledger-firefly/cli/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 

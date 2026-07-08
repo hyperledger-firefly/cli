@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/crane"
-	"github.com/hyperledger/firefly-cli/internal/log"
+	"github.com/hyperledger-firefly/cli/internal/log"
 )
 
 type (
