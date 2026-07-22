@@ -459,6 +459,13 @@ func (s *StackManager) writeConfig(options *types.InitOptions) error {
 	for _, member := range s.Stack.Members {
 		config := core.NewFireflyConfig(s.Stack, member)
 
+		if options.EnableAutoReload { 
+        	if config.Config == nil {
+				config.Config = &types.CoreConfig{}
+			}
+			config.Config.AutoReload = true
+    	}
+
 		// TODO: This code assumes that there is only one plugin instance per type. When we add support for
 		// multiple namespaces, this code will likely have to change a lot
 		blockchainConfig := s.blockchainProvider.GetBlockchainPluginConfig(s.Stack, member)

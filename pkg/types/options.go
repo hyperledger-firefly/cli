@@ -73,6 +73,7 @@ type InitOptions struct {
 	CustomPinSupport          bool
 	RemoteNodeDeploy          bool
 	EnvironmentVars           map[string]string
+	EnableAutoReload          bool
 }
 
 const IPFSMode = "ipfs_mode"
