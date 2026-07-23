@@ -505,6 +505,13 @@ func (s *StackManager) writeConfig(options *types.InitOptions) error {
 		}
 	}
 
+	if s.Stack.IPFSMode.Equals(types.IPFSModePrivate) {
+		initScript := GenerateIPFSPrivateNetInitScript()
+		if err := os.WriteFile(path.Join(s.Stack.InitDir, "config", "ipfs_privatenet_init.sh"), []byte(initScript), 0755); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -560,6 +567,21 @@ func (s *StackManager) copyDataExchangeConfigToVolumes() error {
 			return err
 		}
 		if err := docker.CopyFileToVolume(s.ctx, volumeName, path.Join(memberDXDir, "key.pem"), "/key.pem"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *StackManager) copyIPFSInitScriptToVolumes() error {
+	if !s.Stack.IPFSMode.Equals(types.IPFSModePrivate) {
+		return nil
+	}
+	configDir := filepath.Join(s.Stack.RuntimeDir, "config")
+	scriptPath := path.Join(configDir, "ipfs_privatenet_init.sh")
+	for _, member := range s.Stack.Members {
+		volumeName := fmt.Sprintf("%s_ipfs_init_%s", s.Stack.Name, member.ID)
+		if err := docker.CopyFileToVolume(s.ctx, volumeName, scriptPath, "/privatenet-init.sh"); err != nil {
 			return err
 		}
 	}
@@ -905,6 +927,10 @@ func (s *StackManager) runFirstTimeSetup(options *types.StartOptions) (messages 
 	}
 
 	if err := s.copyDataExchangeConfigToVolumes(); err != nil {
+		return messages, err
+	}
+
+	if err := s.copyIPFSInitScriptToVolumes(); err != nil {
 		return messages, err
 	}
 
