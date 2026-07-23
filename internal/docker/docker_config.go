@@ -167,6 +167,11 @@ func CreateDockerCompose(s *types.Stack) *DockerComposeConfig {
 				"LIBP2P_FORCE_PNET": "1",
 			},
 			)
+			// Kubo's AutoConf/public-network defaults are incompatible with a
+			// private swarm and prevent peering with other members unless
+			// disabled via a container-init.d script - see ipfs_config.go.
+			sharedStorage.Volumes = append(sharedStorage.Volumes, fmt.Sprintf("ipfs_init_%s:/container-init.d", member.ID))
+			compose.Volumes[fmt.Sprintf("ipfs_init_%s", member.ID)] = struct{}{}
 		} else {
 			sharedStorage.Environment = s.EnvironmentVars
 		}
