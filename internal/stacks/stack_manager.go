@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"path"
@@ -505,6 +506,13 @@ func (s *StackManager) writeConfig(options *types.InitOptions) error {
 		}
 	}
 
+	if s.Stack.IPFSMode.Equals(types.IPFSModePrivate) {
+		initScript := GenerateIPFSPrivateNetInitScript()
+		if err := os.WriteFile(path.Join(s.Stack.InitDir, "config", "ipfs_privatenet_init.sh"), []byte(initScript), 0755); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -561,6 +569,61 @@ func (s *StackManager) copyDataExchangeConfigToVolumes() error {
 		}
 		if err := docker.CopyFileToVolume(s.ctx, volumeName, path.Join(memberDXDir, "key.pem"), "/key.pem"); err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+func (s *StackManager) copyIPFSInitScriptToVolumes() error {
+	if !s.Stack.IPFSMode.Equals(types.IPFSModePrivate) {
+		return nil
+	}
+	configDir := filepath.Join(s.Stack.RuntimeDir, "config")
+	scriptPath := path.Join(configDir, "ipfs_privatenet_init.sh")
+	for _, member := range s.Stack.Members {
+		volumeName := fmt.Sprintf("%s_ipfs_init_%s", s.Stack.Name, member.ID)
+		if err := docker.CopyFileToVolume(s.ctx, volumeName, scriptPath, "/privatenet-init.sh"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// peerIPFSNodes explicitly peers every private-mode IPFS node with every
+// other member's node. mDNS auto-discovery has proven unreliable across
+// different Docker networking environments (it connected nodes on Docker
+// Desktop but not on a native Linux Docker bridge network, such as GitHub
+// Actions runners use), so without this, members' IPFS nodes may never
+// connect to each other and shared storage downloads will hang/time out.
+func (s *StackManager) peerIPFSNodes() error {
+	if !s.Stack.IPFSMode.Equals(types.IPFSModePrivate) || len(s.Stack.Members) < 2 {
+		return nil
+	}
+
+	type ipfsIDResponse struct {
+		ID string `json:"ID"`
+	}
+
+	peerIDs := make(map[string]string, len(s.Stack.Members))
+	for _, member := range s.Stack.Members {
+		var idResp ipfsIDResponse
+		url := fmt.Sprintf("http://127.0.0.1:%d/api/v0/id", member.ExposedIPFSApiPort)
+		if err := core.RequestWithRetry(s.ctx, http.MethodPost, url, nil, &idResp); err != nil {
+			return fmt.Errorf("failed to get IPFS peer ID for member %s: %w", member.ID, err)
+		}
+		peerIDs[member.ID] = idResp.ID
+	}
+
+	for _, member := range s.Stack.Members {
+		for _, other := range s.Stack.Members {
+			if member.ID == other.ID {
+				continue
+			}
+			addr := fmt.Sprintf("/dns4/ipfs_%s/tcp/4001/p2p/%s", other.ID, peerIDs[other.ID])
+			url := fmt.Sprintf("http://127.0.0.1:%d/api/v0/swarm/peering/add?arg=%s", member.ExposedIPFSApiPort, addr)
+			if err := core.RequestWithRetry(s.ctx, http.MethodPost, url, nil, nil); err != nil {
+				return fmt.Errorf("failed to peer IPFS node %s with %s: %w", member.ID, other.ID, err)
+			}
 		}
 	}
 	return nil
@@ -908,6 +971,10 @@ func (s *StackManager) runFirstTimeSetup(options *types.StartOptions) (messages 
 		return messages, err
 	}
 
+	if err := s.copyIPFSInitScriptToVolumes(); err != nil {
+		return messages, err
+	}
+
 	pullOptions := &types.PullOptions{
 		Retries: 2,
 	}
@@ -1032,6 +1099,13 @@ func (s *StackManager) runFirstTimeSetup(options *types.StartOptions) (messages 
 	}
 
 	if err := s.ensureFireflyNodesUp(true); err != nil {
+		return messages, err
+	}
+
+	// Peer the IPFS nodes on the finalized containers, after the config
+	// restart above, so peering is applied to the containers that will keep
+	// running rather than relying on it surviving the restart.
+	if err := s.peerIPFSNodes(); err != nil {
 		return messages, err
 	}
 
