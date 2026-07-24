@@ -986,10 +986,6 @@ func (s *StackManager) runFirstTimeSetup(options *types.StartOptions) (messages 
 		return messages, err
 	}
 
-	if err := s.peerIPFSNodes(); err != nil {
-		return messages, err
-	}
-
 	for i, tp := range s.tokenProviders {
 		if !s.Stack.DisableTokenFactories {
 			result, err := tp.DeploySmartContracts(i)
@@ -1103,6 +1099,13 @@ func (s *StackManager) runFirstTimeSetup(options *types.StartOptions) (messages 
 	}
 
 	if err := s.ensureFireflyNodesUp(true); err != nil {
+		return messages, err
+	}
+
+	// Peer the IPFS nodes on the finalized containers, after the config
+	// restart above, so peering is applied to the containers that will keep
+	// running rather than relying on it surviving the restart.
+	if err := s.peerIPFSNodes(); err != nil {
 		return messages, err
 	}
 
