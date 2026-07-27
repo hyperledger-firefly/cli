@@ -620,9 +620,21 @@ func (s *StackManager) peerIPFSNodes() error {
 				continue
 			}
 			addr := fmt.Sprintf("/dns4/ipfs_%s/tcp/4001/p2p/%s", other.ID, peerIDs[other.ID])
-			url := fmt.Sprintf("http://127.0.0.1:%d/api/v0/swarm/peering/add?arg=%s", member.ExposedIPFSApiPort, addr)
-			if err := core.RequestWithRetry(s.ctx, http.MethodPost, url, nil, nil); err != nil {
+
+			// swarm/peering/add only registers the peer with Kubo's background
+			// reconnect service - it returns success even when the peer is
+			// unreachable, so it does not confirm a connection was made.
+			peeringURL := fmt.Sprintf("http://127.0.0.1:%d/api/v0/swarm/peering/add?arg=%s", member.ExposedIPFSApiPort, addr)
+			if err := core.RequestWithRetry(s.ctx, http.MethodPost, peeringURL, nil, nil); err != nil {
 				return fmt.Errorf("failed to peer IPFS node %s with %s: %w", member.ID, other.ID, err)
+			}
+
+			// swarm/connect dials synchronously and errors if the connection
+			// fails, so retrying it confirms the nodes are actually connected
+			// rather than just registered to reconnect in the background.
+			connectURL := fmt.Sprintf("http://127.0.0.1:%d/api/v0/swarm/connect?arg=%s", member.ExposedIPFSApiPort, addr)
+			if err := core.RequestWithRetry(s.ctx, http.MethodPost, connectURL, nil, nil); err != nil {
+				return fmt.Errorf("failed to connect IPFS node %s to %s: %w", member.ID, other.ID, err)
 			}
 		}
 	}
