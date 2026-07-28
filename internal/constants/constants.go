@@ -23,7 +23,7 @@ import (
 
 var StacksDir = checkHome()
 var FireFlyCoreImageName = "ghcr.io/hyperledger-firefly/firefly"
-var IPFSImageName = "ipfs/go-ipfs:v0.10.0"
+var IPFSImageName = "ipfs/kubo:v0.42.0"
 var PostgresImageName = "postgres"
 var PrometheusImageName = "prom/prometheus"
 var SandboxImageName = "ghcr.io/hyperledger-firefly/sandbox:latest"

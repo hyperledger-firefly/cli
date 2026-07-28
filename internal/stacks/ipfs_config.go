@@ -29,3 +29,20 @@ func GenerateSwarmKey() (string, error) {
 	hexKey := hex.EncodeToString(key)
 	return "/key/swarm/psk/1.0.0/\n/base16/\n" + hexKey, nil
 }
+
+// GenerateIPFSPrivateNetInitScript returns a container-init.d script that
+// disables Kubo's AutoConf/public-network defaults, which are incompatible
+// with a private swarm (swarm.key / LIBP2P_FORCE_PNET) and otherwise prevent
+// the daemon from starting or from ever peering with other members.
+func GenerateIPFSPrivateNetInitScript() string {
+	return `#!/bin/sh
+ipfs config --json AutoConf.Enabled false
+ipfs config --json Bootstrap '[]'
+ipfs config --json DNS.Resolvers '{}'
+ipfs config --json Routing.DelegatedRouters '[]'
+ipfs config --json Ipns.DelegatedPublishers '[]'
+ipfs config Routing.Type dht
+ipfs config --json AutoTLS.Enabled false
+ipfs config --json Swarm.Transports.Network.Websocket false
+`
+}
