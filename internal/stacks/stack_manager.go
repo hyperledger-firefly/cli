@@ -601,6 +601,8 @@ func (s *StackManager) peerIPFSNodes() error {
 		return nil
 	}
 
+	s.Log.Info("peering IPFS nodes")
+
 	type ipfsIDResponse struct {
 		ID string `json:"ID"`
 	}
@@ -659,8 +661,11 @@ func (s *StackManager) peerIPFSNodes() error {
 			if err := core.RequestWithRetry(s.ctx, http.MethodPost, connectURL, nil, nil); err != nil {
 				return fmt.Errorf("failed to connect IPFS node %s to %s: %w", member.ID, other.ID, err)
 			}
+			s.Log.Info(fmt.Sprintf("IPFS node %s peered with %s (%s)", member.ID, other.ID, peerIDs[other.ID]))
 		}
 	}
+
+	s.Log.Info("IPFS nodes peered successfully")
 	return nil
 }
 
