@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path"
@@ -600,6 +601,8 @@ func (s *StackManager) peerIPFSNodes() error {
 		return nil
 	}
 
+	s.Log.Info("peering IPFS nodes")
+
 	type ipfsIDResponse struct {
 		ID string `json:"ID"`
 	}
@@ -614,30 +617,55 @@ func (s *StackManager) peerIPFSNodes() error {
 		peerIDs[member.ID] = idResp.ID
 	}
 
+	type peeringPeer struct {
+		ID    string   `json:"ID"`
+		Addrs []string `json:"Addrs"`
+	}
+
 	for _, member := range s.Stack.Members {
+		peers := []peeringPeer{}
+		for _, other := range s.Stack.Members {
+			if member.ID == other.ID {
+				continue
+			}
+			peers = append(peers, peeringPeer{
+				ID:    peerIDs[other.ID],
+				Addrs: []string{fmt.Sprintf("/dns4/ipfs_%s/tcp/4001", other.ID)},
+			})
+		}
+		peersJSON, err := json.Marshal(peers)
+		if err != nil {
+			return err
+		}
+
+		// swarm/peering/add only registers the peer with the *running*
+		// daemon's in-memory peering service and returns success even when
+		// the peer is unreachable - it does not persist to Peering.Peers in
+		// the on-disk config, so the pairing is lost on the next restart.
+		// Writing through /api/v0/config persists it for real, and Kubo
+		// picks up the change live (no restart needed).
+		configURL := fmt.Sprintf("http://127.0.0.1:%d/api/v0/config?arg=Peering.Peers&arg=%s&json=true", member.ExposedIPFSApiPort, url.QueryEscape(string(peersJSON)))
+		if err := core.RequestWithRetry(s.ctx, http.MethodPost, configURL, nil, nil); err != nil {
+			return fmt.Errorf("failed to persist IPFS peering config for member %s: %w", member.ID, err)
+		}
+
 		for _, other := range s.Stack.Members {
 			if member.ID == other.ID {
 				continue
 			}
 			addr := fmt.Sprintf("/dns4/ipfs_%s/tcp/4001/p2p/%s", other.ID, peerIDs[other.ID])
-
-			// swarm/peering/add only registers the peer with Kubo's background
-			// reconnect service - it returns success even when the peer is
-			// unreachable, so it does not confirm a connection was made.
-			peeringURL := fmt.Sprintf("http://127.0.0.1:%d/api/v0/swarm/peering/add?arg=%s", member.ExposedIPFSApiPort, addr)
-			if err := core.RequestWithRetry(s.ctx, http.MethodPost, peeringURL, nil, nil); err != nil {
-				return fmt.Errorf("failed to peer IPFS node %s with %s: %w", member.ID, other.ID, err)
-			}
-
 			// swarm/connect dials synchronously and errors if the connection
 			// fails, so retrying it confirms the nodes are actually connected
-			// rather than just registered to reconnect in the background.
+			// now rather than waiting on the peering service's own timing.
 			connectURL := fmt.Sprintf("http://127.0.0.1:%d/api/v0/swarm/connect?arg=%s", member.ExposedIPFSApiPort, addr)
 			if err := core.RequestWithRetry(s.ctx, http.MethodPost, connectURL, nil, nil); err != nil {
 				return fmt.Errorf("failed to connect IPFS node %s to %s: %w", member.ID, other.ID, err)
 			}
+			s.Log.Info(fmt.Sprintf("IPFS node %s peered with %s (%s)", member.ID, other.ID, peerIDs[other.ID]))
 		}
 	}
+
+	s.Log.Info("IPFS nodes peered successfully")
 	return nil
 }
 

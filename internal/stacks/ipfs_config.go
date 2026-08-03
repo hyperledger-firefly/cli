@@ -34,6 +34,14 @@ func GenerateSwarmKey() (string, error) {
 // disables Kubo's AutoConf/public-network defaults, which are incompatible
 // with a private swarm (swarm.key / LIBP2P_FORCE_PNET) and otherwise prevent
 // the daemon from starting or from ever peering with other members.
+//
+// Routing.Type is set to "none" rather than "dht": a small private swarm hits
+// a long-standing upstream bug (https://github.com/ipfs/kubo/issues/8346)
+// where bitswap finds a provider via the DHT but never sends it a WANT
+// message if the swarm connection to that peer already existed, so content
+// fetches hang even though the peers are connected. With routing disabled,
+// bitswap has no choice but to broadcast wants directly to its connected
+// peers, which is all a 2+ node private swarm actually needs.
 func GenerateIPFSPrivateNetInitScript() string {
 	return `#!/bin/sh
 ipfs config --json AutoConf.Enabled false
@@ -41,7 +49,7 @@ ipfs config --json Bootstrap '[]'
 ipfs config --json DNS.Resolvers '{}'
 ipfs config --json Routing.DelegatedRouters '[]'
 ipfs config --json Ipns.DelegatedPublishers '[]'
-ipfs config Routing.Type dht
+ipfs config Routing.Type none
 ipfs config --json AutoTLS.Enabled false
 ipfs config --json Swarm.Transports.Network.Websocket false
 `
